@@ -3,11 +3,13 @@ package com.example.android.todolist.database;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 import android.util.Log;
 
 
 @Database(entities = {TaskEntry.class}, version = 1, exportSchema = false)
+@TypeConverters(DateConverter.class)
 public abstract class TaskDatabase extends RoomDatabase {
 
     private static final String LOG_TAG = TaskDatabase.class.getSimpleName();
@@ -32,6 +34,5 @@ public abstract class TaskDatabase extends RoomDatabase {
         return ourInstance;
     }
 
-    private TaskDatabase() {
-    }
+    public abstract TaskDao taskDao();
 }
