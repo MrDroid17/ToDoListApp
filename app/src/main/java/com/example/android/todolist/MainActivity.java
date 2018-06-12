@@ -68,16 +68,24 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
          An ItemTouchHelper enables touch behavior (like swipe and move) on each ViewHolder,
          and uses callbacks to signal when a user is performing these actions.
          */
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
             }
-
-            // Called when a user swipes left or right on a ViewHolder
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                // Here is where you'll implement swipe to delete
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                TaskExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        int position = viewHolder.getAdapterPosition();
+                        List<TaskEntry> tasks = mAdapter.getmTaskEntries();
+                        mDb.taskDao().deleteEntry(tasks.get(position));
+                        retrieveMethod();
+
+                    }
+                });
+
             }
         }).attachToRecyclerView(mRecyclerView);
 
@@ -106,6 +114,10 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         /***
          * using this line on Resume make sure to refresh it every time some one came back to this activity
          */
+        retrieveMethod();
+    }
+
+    private void retrieveMethod() {
         TaskExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
