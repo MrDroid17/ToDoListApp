@@ -26,6 +26,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
+import com.example.android.todolist.database.TaskDatabase;
+
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
 
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     // Member variables for the adapter and RecyclerView
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
+
+    private TaskDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +93,14 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                 startActivity(addTaskIntent);
             }
         });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mDb = TaskDatabase.getInstance(getApplicationContext());
+
     }
 
     @Override
