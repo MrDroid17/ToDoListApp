@@ -27,6 +27,9 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import com.example.android.todolist.database.TaskDatabase;
+import com.example.android.todolist.database.TaskEntry;
+
+import java.util.List;
 
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
@@ -94,13 +97,31 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             }
         });
 
+        mDb = TaskDatabase.getInstance(getApplicationContext());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mDb = TaskDatabase.getInstance(getApplicationContext());
+        /***
+         * using this line on Resume make sure to refresh it every time some one came back to this activity
+         */
+        TaskExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
 
+                final List<TaskEntry> tasks = mDb.taskDao().loadAllTasks();
+                // will simplify once learn about android Architecture component
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.setTasks(tasks);
+                    }
+                });
+
+
+            }
+        });
     }
 
     @Override

@@ -29,6 +29,8 @@ import com.example.android.todolist.database.TaskDatabase;
 import com.example.android.todolist.database.TaskEntry;
 
 import java.util.Date;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 
 public class AddTaskActivity extends AppCompatActivity {
@@ -118,9 +120,15 @@ public class AddTaskActivity extends AppCompatActivity {
         Date date =new Date();
 
         //insert data in room database
-        TaskEntry taskEntry= new TaskEntry(taskDiscription, priority, date);
-        mDb.taskDao().insertEntry(taskEntry);
-        finish();
+        final TaskEntry taskEntry= new TaskEntry(taskDiscription, priority, date);
+        //using executor class
+        TaskExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.taskDao().insertEntry(taskEntry);
+                finish();
+            }
+        });
     }
 
     /**
