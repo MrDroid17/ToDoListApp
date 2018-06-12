@@ -24,7 +24,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
+import com.example.android.todolist.database.TaskDao;
+import com.example.android.todolist.database.TaskDatabase;
 import com.example.android.todolist.database.TaskEntry;
+
+import java.util.Date;
 
 
 public class AddTaskActivity extends AppCompatActivity {
@@ -48,9 +52,14 @@ public class AddTaskActivity extends AppCompatActivity {
 
     private int mTaskId = DEFAULT_TASK_ID;
 
+    //intialize TaskDatabse
+    private TaskDatabase mDb;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
+
+        mDb = TaskDatabase.getInstance(getApplicationContext());
 
         initViews();
 
@@ -104,6 +113,14 @@ public class AddTaskActivity extends AppCompatActivity {
      */
     public void onSaveButtonClicked() {
         // Not yet implemented
+        String taskDiscription = mEditText.getText().toString().trim();
+        int priority = getPriorityFromViews();
+        Date date =new Date();
+
+        //insert data in room database
+        TaskEntry taskEntry= new TaskEntry(taskDiscription, priority, date);
+        mDb.taskDao().insertEntry(taskEntry);
+        finish();
     }
 
     /**

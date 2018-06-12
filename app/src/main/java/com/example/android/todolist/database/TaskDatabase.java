@@ -26,6 +26,11 @@ public abstract class TaskDatabase extends RoomDatabase {
                         context.getApplicationContext(),
                         TaskDatabase.class,
                         TaskDatabase.DATABASE_NAME)
+                        /***
+                         * query should be done in seperate thread to avoid locking of main UI thread
+                         * this is only temporarily to see if db is working
+                         */
+                        .allowMainThreadQueries()
                         .build();
             }
         }
