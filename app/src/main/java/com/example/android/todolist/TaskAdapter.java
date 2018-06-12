@@ -39,6 +39,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     // Constant for date format
     private static final String DATE_FORMAT = "dd/MM/yyy";
+    private static final String TIME_FORMAT = "HH:mm:ss";
+
 
     // Member variable to handle item clicks
     final private ItemClickListener mItemClickListener;
@@ -47,6 +49,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     private Context mContext;
     // Date formatter
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
+
+    //time formatter
+    private SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT, Locale.getDefault());
 
     /**
      * Constructor for the TaskAdapter that initializes the Context.
@@ -85,11 +90,12 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         TaskEntry taskEntry = mTaskEntries.get(position);
         String description = taskEntry.getDescription();
         int priority = taskEntry.getPriority();
-        String updatedAt = dateFormat.format(taskEntry.getUpdatedAt());
+        String updatedAtDate = dateFormat.format(taskEntry.getUpdatedAt());
+        String updatedAtTime = timeFormat.format(taskEntry.getUpdatedAt());
 
         //Set values
         holder.taskDescriptionView.setText(description);
-        holder.updatedAtView.setText(updatedAt);
+        holder.updatedAtView.setText(updatedAtDate + "   " + updatedAtTime);
 
         // Programmatically set the text and color for the priority TextView
         String priorityString = "" + priority; // converts int to String

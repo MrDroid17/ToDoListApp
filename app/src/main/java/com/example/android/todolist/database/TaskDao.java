@@ -1,6 +1,5 @@
 package com.example.android.todolist.database;
 
-
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -19,10 +18,13 @@ public interface TaskDao {
     @Insert
     void insertEntry(TaskEntry taskEntry);
 
+    @Delete
+    void deleteEntry(TaskEntry taskEntry);
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void updateEntry(TaskEntry taskEntry);
 
-    @Delete
-    void deleteEntry(TaskEntry taskEntry);
+    @Query("SELECT * FROM taskListTable WHERE id = :id")
+    TaskEntry loadTaskById(int id);
 
 }
