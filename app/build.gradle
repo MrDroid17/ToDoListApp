@@ -15,27 +15,32 @@ android {
             minifyEnabled false
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     def room_version = "1.1.0"
+    def lifecycle_version = "1.1.1"
 
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.0.2'
-
     //add Recycler view dependencies; must match SDK version
     implementation 'com.android.support:recyclerview-v7:27.0.2'
-
     //FAB dependencies
     implementation 'com.android.support:design:27.0.2'
-
     //Room
     implementation "android.arch.persistence.room:runtime:$room_version"
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
 
-    //Testing
-    // Instrumentation dependencies use androidTestCompile
-    // (as opposed to testCompile for local unit tests run in the JVM)
+    // ViewModel and LiveData
+    implementation "android.arch.lifecycle:viewmodel:$lifecycle_version"
+    implementation "android.arch.lifecycle:livedata:$lifecycle_version"
+    //use instead of annotation processor if you are using java 8
+    implementation "android.arch.lifecycle:common-java8:$lifecycle_version"
+    
     androidTestImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support:support-annotations:27.0.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'

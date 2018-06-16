@@ -16,14 +16,18 @@
 
 package com.example.android.todolist;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 
 import com.example.android.todolist.database.TaskDatabase;
@@ -81,8 +85,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                         int position = viewHolder.getAdapterPosition();
                         List<TaskEntry> tasks = mAdapter.getmTaskEntries();
                         mDb.taskDao().deleteEntry(tasks.get(position));
-                        retrieveMethod();
-
                     }
                 });
 
@@ -96,43 +98,24 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
          */
         FloatingActionButton fabButton = findViewById(R.id.fab);
 
-        fabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Create a new intent to start an AddTaskActivity
-                Intent addTaskIntent = new Intent(MainActivity.this, AddTaskActivity.class);
-                startActivity(addTaskIntent);
-            }
+        fabButton.setOnClickListener(view -> {
+            // Create a new intent to start an AddTaskActivity
+            Intent addTaskIntent = new Intent(MainActivity.this, AddTaskActivity.class);
+            startActivity(addTaskIntent);
         });
 
         mDb = TaskDatabase.getInstance(getApplicationContext());
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        /***
-         * using this line on Resume make sure to refresh it every time some one came back to this activity
-         */
         retrieveMethod();
     }
 
     private void retrieveMethod() {
-        TaskExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-
-                final List<TaskEntry> tasks = mDb.taskDao().loadAllTasks();
-                // will simplify once learn about android Architecture component
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.setTasks(tasks);
-                    }
-                });
-
-
-            }
+        Log.d(TAG, "retrieveMethod: outside");
+        final LiveData<List<TaskEntry>> tasks = mDb.taskDao().loadAllTasks();
+        //call observer
+        //onChange will be trigger everytime there is a change in database
+        tasks.observe(this, taskEntries -> {
+            Log.d(TAG, "retrieveMethod: onChange triggerd");
+            mAdapter.setTasks(taskEntries);
         });
     }
 
