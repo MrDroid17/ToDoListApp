@@ -18,6 +18,7 @@ package com.example.android.todolist;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -79,13 +80,16 @@ public class AddTaskActivity extends AppCompatActivity {
             if (mTaskId == DEFAULT_TASK_ID) {
                 mTaskId = intent.getIntExtra(EXTRA_TASK_ID, DEFAULT_TASK_ID);
 
-                // populate the UI
-                final LiveData<TaskEntry> task = mDb.taskDao().loadTaskById(mTaskId);
-                task.observe(this, new Observer<TaskEntry>() {
+                //this is how to get View model
+                AddTaskViewModelFactory factory = new AddTaskViewModelFactory(mDb, mTaskId);
+                final AddTaskViewModel viewModel = factory.create(AddTaskViewModel.class);
+
+                viewModel.getTask().observe(this, new Observer<TaskEntry>() {
                     @Override
                     public void onChanged(@Nullable TaskEntry taskEntry) {
-                        task.removeObserver(this);
+                        viewModel.getTask().removeObserver(this);
                         Log.d(TAG, "onChanged: adding a task");
+                        // populate the UI
                         populateUI(taskEntry);
                     }
                 });
