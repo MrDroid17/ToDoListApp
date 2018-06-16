@@ -26,6 +26,6 @@ public interface TaskDao {
     void updateEntry(TaskEntry taskEntry);
 
     @Query("SELECT * FROM taskListTable WHERE id = :id")
-    TaskEntry loadTaskById(int id);
+    LiveData<TaskEntry> loadTaskById(int id);
 
 }
