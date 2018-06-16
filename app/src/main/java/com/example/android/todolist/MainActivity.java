@@ -16,8 +16,10 @@
 
 package com.example.android.todolist;
 
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -105,16 +107,24 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         });
 
         mDb = TaskDatabase.getInstance(getApplicationContext());
-        retrieveMethod();
+        setUpViewModel();
     }
 
-    private void retrieveMethod() {
-        Log.d(TAG, "retrieveMethod: outside");
-        final LiveData<List<TaskEntry>> tasks = mDb.taskDao().loadAllTasks();
-        //call observer
-        //onChange will be trigger everytime there is a change in database
-        tasks.observe(this, taskEntries -> {
-            Log.d(TAG, "retrieveMethod: onChange triggerd");
+    private void setUpViewModel() {
+        /***
+         * @Depricated
+         * MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class)
+         * insetad use below code
+         * ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(MainViewModel.class);
+         */
+        MainViewModel viewModel = ViewModelProvider
+                .AndroidViewModelFactory
+                .getInstance(getApplication())
+                .create(MainViewModel.class);
+
+        //call observer onChange will be trigger everytime there is a change in database
+        viewModel.getTasks().observe(this, taskEntries -> {
+            Log.d(TAG, "updating task from LiveData in ViewModel.");
             mAdapter.setTasks(taskEntries);
         });
     }
